@@ -1,0 +1,41 @@
+{
+  "editor.fontSize": 18,
+  "editor.fontFamily": "Ubuntu Mono",
+  "editor.tabSize": 2,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.renderWhitespace": "all",
+  "editor.cursorStyle": "block",
+  "editor.cursorSmoothCaretAnimation": "on",
+  "editor.cursorBlinking": "solid",
+  "editor.autoClosingBrackets": "beforeWhitespace",
+  "editor.wordWrap": "on",
+
+  "diffEditor.wordWrap": "on",
+
+  "workbench.layoutControl.enabled": false,
+  "workbench.colorTheme": "Horizon Bold",
+  "workbench.iconTheme": "material-icon-theme",
+  "workbench.editor.showTabs": "multiple",
+  "workbench.editor.editorActionsLocation": "hidden",
+
+  "terminal.integrated.fontFamily": "monospace",
+
+  "window.titleSeparator": "",
+  // "window.customTitleBarVisibility": "never", // Чет хз что делает
+  "window.commandCenter": false,
+  "window.title": "${rootName}", // При измененной теме кастомнйы мод не работает. Лучше сдлать включение по alt.
+  "window.titleBarStyle": "custom", // Убирает огроный худ гнома. При native перехватывает худ темы.
+  "window.menuBarVisibility": "compact",
+
+  "prettier.requireConfig": true,
+  "prettier.singleQuote": true,
+
+  "liveServer.settings.donotShowInfoMsg": true,
+  "tailwindCSS.experimental.configFile": null,
+  "material-icon-theme.activeIconPack": "nest",
+  "editor.minimap.enabled": false,
+
+
+  // Дтя того что бы Vs-code понимал клавиши переназначенные в системе.
+  "keyboard.dispatch": "keyCode"
+}
