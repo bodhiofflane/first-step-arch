@@ -13,13 +13,20 @@ import { IExeptionFilter } from './errors/exeption.filter.interface';
 
 import { TYPES } from './types';
 import { IUsersController } from './users/users.controller.interace';
+import { IConfigService } from './config/config.service.interface';
+import { ConfigService } from './config/config.service';
 
 export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
-  bind<ILogger>(TYPES.ILogger).to(LoggerService);
-  bind<IExeptionFilter>(TYPES.ExeptionFilter).to(ExeptionFilter);
-  bind<IUsersController>(TYPES.UsersController).to(UsersController);
-  bind<IUsersService>(TYPES.UsersService).to(UsersService);
-  bind<App>(TYPES.Application).to(App);
+  // 1) Желательно инекцировать один экземпляр в классы потребители.
+  // 2) Исключением являются случаи когда инекцировать нужно явно разные инстансы класса.
+  // 3) Также можно не применять inSingletonScope когда инъекция будет проведена лишь один раз, в один класс.
+  bind<ILogger>(TYPES.ILogger).to(LoggerService).inSingletonScope();
+  bind<IExeptionFilter>(TYPES.ExeptionFilter).to(ExeptionFilter).inSingletonScope();
+  bind<IUsersController>(TYPES.UsersController).to(UsersController).inSingletonScope();
+  bind<IUsersService>(TYPES.UsersService).to(UsersService).inSingletonScope();
+  // Здесь нам нужно что-бы у нас шарился один экземпляр конфигураций. В консоле видм лишь одну инициализацию конфига.
+  bind<IConfigService>(TYPES.ConfigService).to(ConfigService).inSingletonScope();
+  bind<App>(TYPES.Application).to(App).inSingletonScope();
 });
 
 function bootstrap(): IBootstrapReturn {

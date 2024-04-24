@@ -19,7 +19,8 @@ export class UserEntity {
     return this._password;
   }
 
-  public async setPassword(pass: string): Promise<void> {
-    this._password = await hash(pass, 10);
+  // 1) Приняли СОЛЬ из конфига.
+  public async setPassword(pass: string, salt: number): Promise<void> {
+    this._password = await hash(pass, salt);
   }
 }
