@@ -10,6 +10,7 @@ import { IExeptionFilter } from './errors/exeption.filter.interface';
 
 import { TYPES } from './types';
 import { IConfigService } from './config/config.service.interface';
+import { PrismaService } from './database/prisma.service';
 
 @injectable()
 export class App {
@@ -18,10 +19,12 @@ export class App {
   public server: Server;
 
   constructor(
+    @inject(TYPES.ConfigService) public configService: IConfigService,
+    // 1) Получаем PrismaService а далее запустим connect/
+    @inject(TYPES.PrismaService) public prismaService: PrismaService,
     @inject(TYPES.ILogger) public logger: ILogger,
     @inject(TYPES.UsersController) public usersController: UsersController,
     @inject(TYPES.ExeptionFilter) public exeptionFilter: IExeptionFilter,
-    @inject(TYPES.ConfigService) public configService: IConfigService,
   ) {
     this.app = express();
     this.port = 8000;
@@ -39,10 +42,12 @@ export class App {
     this.app.use(express.json());
   }
 
-  public init(): void {
+  public async init(): Promise<void> {
     this.useMiddleware();
     this.useRoutes();
     this.useExeptionsFilter();
+    // 2) Конектимся к db.
+    await this.prismaService.connection();
     this.server = this.app.listen(this.port);
     this.logger.log(`Сервер запущен на http://localhost:${this.port}`);
   }

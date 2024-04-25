@@ -15,16 +15,16 @@ import { TYPES } from './types';
 import { IUsersController } from './users/users.controller.interace';
 import { IConfigService } from './config/config.service.interface';
 import { ConfigService } from './config/config.service';
+import { PrismaService } from './database/prisma.service';
 
 export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
-  // 1) Желательно инекцировать один экземпляр в классы потребители.
-  // 2) Исключением являются случаи когда инекцировать нужно явно разные инстансы класса.
-  // 3) Также можно не применять inSingletonScope когда инъекция будет проведена лишь один раз, в один класс.
   bind<ILogger>(TYPES.ILogger).to(LoggerService).inSingletonScope();
   bind<IExeptionFilter>(TYPES.ExeptionFilter).to(ExeptionFilter).inSingletonScope();
   bind<IUsersController>(TYPES.UsersController).to(UsersController).inSingletonScope();
   bind<IUsersService>(TYPES.UsersService).to(UsersService).inSingletonScope();
-  // Здесь нам нужно что-бы у нас шарился один экземпляр конфигураций. В консоле видм лишь одну инициализацию конфига.
+  // 1) Мы чаще будем использовать репозиторий, а сервис нам понадобится только для подключения.
+  // 2) Тем не мение - нам нужен единый инстанс PrismaService.
+  bind<PrismaService>(TYPES.PrismaService).to(PrismaService).inSingletonScope();
   bind<IConfigService>(TYPES.ConfigService).to(ConfigService).inSingletonScope();
   bind<App>(TYPES.Application).to(App).inSingletonScope();
 });
