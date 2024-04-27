@@ -26,7 +26,12 @@ export class UsersController extends BaseController implements IUsersController 
         function: this.register,
         middlewares: [new ValidateMiddleware(UserRegisterDto)],
       },
-      { path: '/login', method: 'post', function: this.login },
+      {
+        path: '/login',
+        method: 'post',
+        function: this.login,
+        middlewares: [new ValidateMiddleware(UserLoginDto)],
+      },
     ]);
   }
 
@@ -35,8 +40,12 @@ export class UsersController extends BaseController implements IUsersController 
     res: Response,
     next: NextFunction,
   ): Promise<void> {
-    console.log(req.body);
-    next(new HTTPError(401, 'Ошибка авторизации', 'login'));
+    const result = await this.usersService.validateUser(req.body);
+    if (!result) {
+      // Функцию next обязательно нужно возвращать чтобы прервать работу контроллера.
+      return next(new HTTPError(401, 'Ошибка авторизации', 'login'));
+    }
+    this.ok(res, { message: 'Ok' });
   }
 
   public async register(
@@ -44,10 +53,12 @@ export class UsersController extends BaseController implements IUsersController 
     res: Response,
     next: NextFunction,
   ): Promise<void> {
-    const result = await this.usersService.createUser(req.body); // body соотвествует UserRegister.dto
+    // 1) Из сервиса возвращается либо UserModel, либо null.
+    const result = await this.usersService.createUser(req.body);
     if (!result) {
       return next(new HTTPError(422, 'Такой пользователь уже существует', 'usersController'));
     }
-    this.ok(res, { email: result.email, name: result.name });
+    // 2) Если пользователь успешно создан, то отсылаем его клиенту.
+    this.ok(res, { id: result.id, email: result.email, name: result.name });
   }
 }

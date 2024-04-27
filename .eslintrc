@@ -6,7 +6,7 @@
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended",
+    "plugin:prettier/recommended"
   ],
   "rules": {
     "no-empty-function": "off",
@@ -21,11 +21,11 @@
         "trailingComa": "all",
         "useTabs": false,
         "tabWidth": 2,
+        "bracketSpacing": true,
         "semi": true,
-        "bracketSpasing": true,
         "printWidth": 100,
-        "endOfLine": "auto",
-      },
-    ],
-  },
+        "endOfLine": "auto"
+      }
+    ]
+  }
 }

@@ -11,7 +11,7 @@ export class PrismaService {
   client: PrismaClient;
 
   constructor(@inject(TYPES.ILogger) private logger: ILogger) {
-    // 4) Получаем инстанс PrismaClient, из которого будем вызывать connect.
+    // 4) Получаем инстанс PrismaClient, из которого будем вызывать connect/
     this.client = new PrismaClient();
   }
 
