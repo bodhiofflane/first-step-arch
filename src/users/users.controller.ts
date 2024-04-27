@@ -34,6 +34,18 @@ export class UsersController extends BaseController implements IUsersController 
       },
     ]);
   }
+  public async register(
+    req: Request<{}, {}, UserRegisterDto>,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    const result = await this.usersService.createUser(req.body);
+    if (!result) {
+      return next(new HTTPError(422, 'Такой пользователь уже существует', 'usersController'));
+    }
+    // 2) Если пользователь успешно создан, то отсылаем его клиенту.
+    this.ok(res, { id: result.id, email: result.email, name: result.name });
+  }
 
   public async login(
     req: Request<{}, {}, UserLoginDto>,
@@ -42,23 +54,8 @@ export class UsersController extends BaseController implements IUsersController 
   ): Promise<void> {
     const result = await this.usersService.validateUser(req.body);
     if (!result) {
-      // Функцию next обязательно нужно возвращать чтобы прервать работу контроллера.
       return next(new HTTPError(401, 'Ошибка авторизации', 'login'));
     }
-    this.ok(res, { message: 'Ok' });
-  }
-
-  public async register(
-    req: Request<{}, {}, UserRegisterDto>,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
-    // 1) Из сервиса возвращается либо UserModel, либо null.
-    const result = await this.usersService.createUser(req.body);
-    if (!result) {
-      return next(new HTTPError(422, 'Такой пользователь уже существует', 'usersController'));
-    }
-    // 2) Если пользователь успешно создан, то отсылаем его клиенту.
     this.ok(res, { id: result.id, email: result.email, name: result.name });
   }
 }

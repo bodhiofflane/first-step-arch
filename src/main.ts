@@ -18,6 +18,8 @@ import { ConfigService } from './config/config.service';
 import { PrismaService } from './database/prisma.service';
 import { UsersRepository } from './users/users.repository';
 import { IUsersRepository } from './users/users.repository.interface';
+import { IHashService } from './common/hash.service.interface';
+import { HashService } from './common/hash.service';
 
 export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
   bind<ILogger>(TYPES.ILogger).to(LoggerService).inSingletonScope();
@@ -31,6 +33,8 @@ export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
   bind<App>(TYPES.Application).to(App).inSingletonScope();
   // 1) Нам нужен UserRepository в едином экземпляре.
   bind<IUsersRepository>(TYPES.UsersRepository).to(UsersRepository).inSingletonScope();
+  // 1) Свой хеш сервис.
+  bind<IHashService>(TYPES.HashService).to(HashService).inSingletonScope();
 });
 
 function bootstrap(): IBootstrapReturn {
