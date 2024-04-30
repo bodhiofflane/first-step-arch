@@ -10,13 +10,18 @@ import 'reflect-metadata';
 import { UserLoginDto } from './dto/user-login.dto';
 import { UserRegisterDto } from './dto/user-register.dto';
 import { IUsersService } from './users.service.interface';
+// ! - переделать.
 import { ValidateMiddleware } from '../common/validate.middleware';
+import { sign } from 'jsonwebtoken';
+import { IConfigService } from '../config/config.service.interface';
+import { AuthGuard } from '../common/auth.guard';
 
 @injectable()
 export class UsersController extends BaseController implements IUsersController {
   constructor(
     @inject(TYPES.ILogger) loggerService: ILogger,
     @inject(TYPES.UsersService) private usersService: IUsersService,
+    @inject(TYPES.ConfigService) private configservice: IConfigService,
   ) {
     super(loggerService);
     this.bindRoutes([
@@ -31,6 +36,12 @@ export class UsersController extends BaseController implements IUsersController 
         method: 'post',
         function: this.login,
         middlewares: [new ValidateMiddleware(UserLoginDto)],
+      },
+      {
+        path: '/info',
+        method: 'get',
+        function: this.info,
+        middlewares: [new AuthGuard()],
       },
     ]);
   }
@@ -56,6 +67,36 @@ export class UsersController extends BaseController implements IUsersController 
     if (!result) {
       return next(new HTTPError(401, 'Ошибка авторизации', 'login'));
     }
-    this.ok(res, { id: result.id, email: result.email, name: result.name });
+    const jwt = await this.signJWT(result.email, this.configservice.get('SECRET'));
+    this.ok(res, { id: result.id, email: result.email, name: result.name, jwt: jwt });
+  }
+
+  // ! - ts-node не поддтягивает доп. файлы типов. Нужно внести модицикации. Нужен флаг --files для считывания костомных типовых файлов.
+  async info(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const user = await this.usersService.getUser(req.user);
+    if (!user) {
+      return next(new HTTPError(404, 'Нет такого пользователя', 'info'));
+    }
+    this.ok(res, { id: user.id, email: user.email });
+  }
+
+  private signJWT(email: string, secret: string): Promise<string> {
+    return new Promise<string>((res, rej) => {
+      sign(
+        {
+          email: email,
+          // 1) Шифруем дату кодирования токена.
+          iat: Math.floor(Date.now() / 1000),
+        },
+        secret,
+        { algorithm: 'HS256' },
+        (error, token) => {
+          if (error) {
+            rej(error);
+          }
+          res(token as string);
+        },
+      );
+    });
   }
 }

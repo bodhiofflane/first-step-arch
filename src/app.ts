@@ -11,6 +11,7 @@ import { IExeptionFilter } from './errors/exeption.filter.interface';
 import { TYPES } from './types';
 import { IConfigService } from './config/config.service.interface';
 import { PrismaService } from './database/prisma.service';
+import { AuthMiddleware } from './common/auth.middleware';
 
 @injectable()
 export class App {
@@ -40,6 +41,9 @@ export class App {
 
   public useMiddleware(): void {
     this.app.use(express.json());
+    // Вонючее говно!
+    const authMiddleware = new AuthMiddleware(this.configService.get('SECRET'));
+    this.app.use(authMiddleware.exicute.bind(authMiddleware));
   }
 
   public async init(): Promise<void> {

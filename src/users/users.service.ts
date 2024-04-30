@@ -39,4 +39,10 @@ export class UsersService implements IUsersService {
     }
     return existedUser;
   }
+
+  async getUser(email: string): Promise<UserModel | null> {
+    const user = await this.usersRepository.find(email);
+    if (!user) return null;
+    return user;
+  }
 }
