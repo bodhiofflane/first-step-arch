@@ -20,21 +20,22 @@ import { UsersRepository } from './users/users.repository';
 import { IUsersRepository } from './users/users.repository.interface';
 import { IHashService } from './common/hash.service.interface';
 import { HashService } from './common/hash.service';
+import { AuthMiddleware } from './common/auth.middleware';
+import { IMiddleware } from './common/middleware.interface';
+import { AuthGuard } from './common/auth.guard';
 
 export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
   bind<ILogger>(TYPES.ILogger).to(LoggerService).inSingletonScope();
   bind<IExeptionFilter>(TYPES.ExeptionFilter).to(ExeptionFilter).inSingletonScope();
   bind<IUsersController>(TYPES.UsersController).to(UsersController).inSingletonScope();
   bind<IUsersService>(TYPES.UsersService).to(UsersService).inSingletonScope();
-  // 1) Мы чаще будем использовать репозиторий, а сервис нам понадобится только для подключения.
-  // 2) Тем не мение - нам нужен единый инстанс PrismaService.
   bind<PrismaService>(TYPES.PrismaService).to(PrismaService).inSingletonScope();
   bind<IConfigService>(TYPES.ConfigService).to(ConfigService).inSingletonScope();
   bind<App>(TYPES.Application).to(App).inSingletonScope();
-  // 1) Нам нужен UserRepository в едином экземпляре.
   bind<IUsersRepository>(TYPES.UsersRepository).to(UsersRepository).inSingletonScope();
-  // 1) Свой хеш сервис.
   bind<IHashService>(TYPES.HashService).to(HashService).inSingletonScope();
+  bind<IMiddleware>(TYPES.AuthMiddleware).to(AuthMiddleware).inSingletonScope();
+  bind<IMiddleware>(TYPES.AuthGuard).to(AuthGuard).inSingletonScope();
 });
 
 function bootstrap(): IBootstrapReturn {

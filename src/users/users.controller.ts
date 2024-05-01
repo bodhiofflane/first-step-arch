@@ -15,6 +15,7 @@ import { ValidateMiddleware } from '../common/validate.middleware';
 import { sign } from 'jsonwebtoken';
 import { IConfigService } from '../config/config.service.interface';
 import { AuthGuard } from '../common/auth.guard';
+import { IMiddleware } from '../common/middleware.interface';
 
 @injectable()
 export class UsersController extends BaseController implements IUsersController {
@@ -22,6 +23,7 @@ export class UsersController extends BaseController implements IUsersController 
     @inject(TYPES.ILogger) loggerService: ILogger,
     @inject(TYPES.UsersService) private usersService: IUsersService,
     @inject(TYPES.ConfigService) private configservice: IConfigService,
+    @inject(TYPES.AuthGuard) private authGuard: IMiddleware,
   ) {
     super(loggerService);
     this.bindRoutes([
@@ -41,7 +43,7 @@ export class UsersController extends BaseController implements IUsersController 
         path: '/info',
         method: 'get',
         function: this.info,
-        middlewares: [new AuthGuard()],
+        middlewares: [this.authGuard],
       },
     ]);
   }
